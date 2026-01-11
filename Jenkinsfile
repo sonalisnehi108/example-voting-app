@@ -1,5 +1,9 @@
+//### Run parallel test on different agents
+
+
+
 pipeline{
-    agent any
+    agent {label "Worker"}
     options {
         buildDiscarder(logRotator(numToKeepStr: '15'))
         disableConcurrentBuilds()
@@ -48,6 +52,28 @@ pipeline{
                 sh '''
                 echo deployment success hurrey
                 '''
+            }
+        }
+
+        // Stages ke ander parallel stage aayegi.. and parallel ke ander aur stages aayenge
+
+        stage('Run Tests In Parallel') {
+            parallel {
+                stage('Linux Test') {
+                    agent { label 'Linux' } // Runs on an agent labeled 'Linux'
+                    steps {
+                        sh 'echo linux test'
+                        sh 'sleep 60'
+                    }
+                }
+
+                stage('Windows tTst') {
+                    agent { label 'Windows' } // Runs on an agent labeled 'windows'
+                    steps {
+                        sh 'echo windows test'
+                        sh 'sleep 60'
+                    }
+                }
             }
         }
 
